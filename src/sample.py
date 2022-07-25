@@ -7,7 +7,7 @@ import torch.utils.data
 import vectorize
 
 # Takes in a list of documents, and yields tuples
-# of sparse training tensors: (OneHotInputTensor, [OneHotOutputTensorsInWindow])
+# of training tensors: (OneHotInputTensor, [OneHotOutputTensorsInWindow])
 class DocumentSampler(torch.utils.data.IterableDataset):
     # Expects a list of documents as inputs, and a window size.
     # Will iterate n times, where n is determined by the number of
@@ -15,10 +15,10 @@ class DocumentSampler(torch.utils.data.IterableDataset):
 
     # First we're going to vectorize, then we're going to create pairs
     # of tensors based on the window size
-    def __init__(self, listOfDocs, windowSize):
+    def __init__(self, listOfDocs, vectorizer, windowSize):
         self.listOfSampleTuples = []
         
-        vectorizedDocs = vectorize.docs2Tensors(listOfDocs)
+        vectorizedDocs = vectorizer.docs2Tensors(listOfDocs)
 
         for docNum in range(len(vectorizedDocs)):
             for tokIndex in range(len(vectorizedDocs[docNum])):

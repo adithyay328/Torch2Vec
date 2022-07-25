@@ -24,7 +24,6 @@ class Vectorizer:
         self.vocabSize = vocabSize - 1
 
     # Convenience function to fit the dictionary with new text
-    # and limit vocab size
     def fit(self, listOfDocuments):
         listOfTokens = []
         # Tokenizing doc and adding all non-punctuation
@@ -33,12 +32,15 @@ class Vectorizer:
             for tok in doc:
                 if not tok.is_punct:
                     listOfTokens.append(tok.lower_)
-        
+
         # Passing to dictionary to fit
         self.dictionary.add_documents( [listOfTokens] )
 
+    # Function to prune vocab down to demanded size
+    def limitVocab(self):
         # We're also going to limit the size of the vocab right now
-        self.dictionary.filter_extremes(keep_n=self.vocabSize)
+        self.dictionary.filter_extremes(no_below=0, no_above=1, keep_n=self.vocabSize)
+
 
     # Takes in a list of documents, and returns a
     # list-of-list-of one-hot encoded sparse pytorch tensors.
@@ -66,7 +68,7 @@ class Vectorizer:
             for index in doc2Indices:
                 # Adding 1 to index so out-of-vocab goes from -1 to 0, and everthing
                 # else is shifted one up, preserving the word that was at index 0
-                denseTensor = torch.zeros( (len(self.dictionary) + 1, ) )
+                denseTensor = torch.zeros( (self.vocabSize + 1,) )
                 denseTensor[index + 1] = 1
 
                 sparseTensor = denseTensor.to_sparse()

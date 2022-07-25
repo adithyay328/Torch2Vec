@@ -4,6 +4,7 @@ import torch
 
 class SkipGramModel(torch.nn.Module):
     def __init__(self, vocabSize, embedSize):
+        super(SkipGramModel, self).__init__()
         # Storing architecture hyperparams
         self.vocabSize = vocabSize
         self.embedSize = embedSize
@@ -28,9 +29,9 @@ class SkipGramModel(torch.nn.Module):
     
     # Given an index, return the word embedding
     def index2Embedding(self, index):
-        # Creating a sparese input vector to run through
+        # Creating a sparse input vector to run through
         # to get embedding
         inVec = torch.zeros( (self.vocabSize,) )
         inVec[index] = 1
 
-        return self.wordEmbedding(inVec)
+        return self.wordEmbedding(inVec.to_sparse_coo())
